@@ -1,7 +1,8 @@
 class RecipeCard extends HTMLElement {
   constructor() {
     // Part 1 Expose - TODO
-
+    super();
+    this.attachShadow({mode: 'open'});
     // You'll want to attach the shadow DOM here
   }
 
@@ -100,6 +101,62 @@ class RecipeCard extends HTMLElement {
     // created in the constructor()
 
     // Part 1 Expose - TODO
+    const image = document.createElement('img');
+    image.setAttribute('src', searchForKey(data, 'thumbnaiUrl'));
+    image.setAttribute('alt', searchForKey(data, 'headline'));
+
+    const paragraph = document.createElement('p');
+    paragraph.className = 'title';
+    card.append(paragraph);
+
+    const link = document.createElement('a');
+    link.setAttribute('href', getUrl(data));
+    link.innerHTML = searchForKey(data, 'headline');
+    paragraph.appendChild(link);
+
+    const pOrg = document.createElement('p');
+    pOrg.className = 'organization';
+    pOrg.innerHTML = getOrganization(data);
+
+    const div = document.createElement('div');
+    const spanStars = document.createElement('span');
+    div.setAttribute('class', 'rating');
+    let rating = searchForKey(data, 'ratingValue');
+
+
+    if (rating) {
+      const imageStar = document.createElement('img');
+      const span = document.createElement('span');
+      let imageSrc = 'assets/images/icons/' + Math.round(rating) + '-star.svg';
+      let imageAlt = Math.round(rating) + ' stars';
+      imageStar.setAttribute('src', imageSrc);
+      imageStar.setAttribute('alt', imageAlt);
+      span.innerHTML = '(' + searchForKey(data, 'ratingCount') + ')';
+      spanStars.innerHTML = rating;
+      div.appendChild(spanStars);
+      div.appendChild(imageStar);
+      div.appendChild(span);
+    } else {
+      spanStars.innerHTML = 'No Reviews';
+      div.appendChild(spanStars);
+    }
+
+    const time = document.createElement('time');
+    time.innerHTML = convertTime(searchForKey(data, 'totalTime'));
+
+    const pIngred = document.createElement('p');
+    pIngred.setAttribute('class', 'ingredients');
+    pIngred.innerHTML =  createIngredientList(searchForKey(data, 'recipeIngredient'));
+
+    card.appendChild(image);
+    card.appendChild(paragraph);
+    card.appendChild(pOrg);
+    card.appendChild(div);
+    card.appendChild(time);
+    card.appendChild(pIngred);
+
+    this.shadowRoot.appendChild(styleElem);
+    this.shadowRoot.appendChild(card);
   }
 }
 
